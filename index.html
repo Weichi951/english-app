@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英文練習小站</title>
+    <!-- 引入美化樣式庫 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen p-6 font-sans">
+
+    <div class="max-w-2xl mx-auto space-y-6">
+        
+        <!-- 標題區 -->
+        <header class="text-center">
+            <h1 class="text-3xl font-extrabold text-blue-600">📚 專屬英文練習站</h1>
+            <p class="text-gray-500 mt-2">點擊卡片觀看中文翻譯，或開啟測驗模式練習</p>
+        </header>
+
+        <!-- 區塊一：隨機測驗模式 -->
+        <section class="bg-white p-6 rounded-xl shadow-md border border-blue-100">
+            <h2 class="text-xl font-bold text-gray-800 mb-3">🎯 隨機小測驗</h2>
+            <div id="quiz-box" class="space-y-3">
+                <p id="quiz-question" class="text-gray-600">點擊下方按鈕開始測驗！</p>
+                <div id="quiz-answer" class="hidden p-3 bg-blue-50 text-blue-800 rounded-lg"></div>
+            </div>
+            <div class="mt-4 flex gap-2">
+                <button onclick="startQuiz()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition">
+                    抽一題
+                </button>
+                <button id="show-ans-btn" onclick="showAnswer()" class="hidden bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition">
+                    顯示答案
+                </button>
+            </div>
+        </section>
+
+        <!-- 區塊二：單字卡列表 -->
+        <section class="bg-white p-6 rounded-xl shadow-md">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">📖 單字卡庫</h2>
+            <div class="space-y-4">
+                {% for item in words %}
+                <div class="p-4 border rounded-xl hover:border-blue-400 transition bg-slate-50">
+                    <div class="flex justify-between items-center">
+                        <span class="text-2xl font-bold text-blue-600">{{ item.word }}</span>
+                        <!-- 點讀發音按鈕 -->
+                        <button onclick="speak('{{ item.word }}')" class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-semibold hover:bg-blue-200">
+                            🔊 發音
+                        </button>
+                    </div>
+                    
+                    <!-- 點擊展開/收合翻譯 -->
+                    <div onclick="this.querySelector('.detail').classList.toggle('hidden')" class="mt-3 cursor-pointer">
+                        <span class="text-sm text-gray-400">點擊查看釋義與例句...</span>
+                        <div class="detail hidden mt-2 pt-2 border-t border-gray-200">
+                            <p class="font-semibold text-gray-700">【中文】：{{ item.definition }}</p>
+                            <p class="text-sm italic text-gray-500 mt-1">【例句】：{{ item.example }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+    </div>
+
+    <!-- 前端互動腳本 -->
+    <script>
+        // 1. 內建免費發音 API (Text-To-Speech)
+        function speak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US'; // 標準美式英文發音
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // 2. 測驗模式邏輯
+        let currentQuiz = null;
+
+        async function startQuiz() {
+            const res = await fetch('/api/quiz');
+            currentQuiz = await res.json();
+            
+            // 朗讀該單字
+            speak(currentQuiz.word);
+
+            document.getElementById('quiz-question').innerHTML = `請聽發音並猜單字：<strong class="text-2xl text-blue-600">${currentQuiz.word}</strong>`;
+            document.getElementById('quiz-answer').classList.add('hidden');
+            document.getElementById('quiz-answer').innerHTML = `中文釋義：${currentQuiz.definition}<br><span class="italic text-sm">例句：${currentQuiz.example}</span>`;
+            document.getElementById('show-ans-btn').classList.remove('hidden');
+        }
+
+        function showAnswer() {
+            document.getElementById('quiz-answer').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
