@@ -1,96 +1,485 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>英文練習小站</title>
-    <!-- 引入美化樣式庫 -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>英文單字學習測驗</title>
+    <style>
+        body{
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff;
+            color: #3b75c7;
+            display: flex;
+            justify-content: center; /* 水平居中 */
+            align-items: center;     /* 垂直居中 */
+            min-height: 100vh;       /* 確保網頁高跟螢幕一樣高 */
+            margin: 0;
+        }
+        .cord{
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 16px;                             /* 圓角 */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);   /* 淡淡的陰影 */
+            width: 100%;
+            max-width: 400px;                                /* 限制最大寬度 */
+            text-align: center;
+        }
+        h1 {
+            margin-top: 0;
+            color: #1e293b;
+            font-size: 1.5rem;
+        }
+        .menu-group {
+            display: flex;
+            flex-direction: column; /* 按鈕垂直一排排列 */
+            gap: 12px;              /* 按鈕之間的間距 */
+        }
+        button {
+            padding: 12px 20px;     /* 內邊距 */
+            font-size: 1rem;        /* 文字大小 */
+            font-weight: 600;       /* 字體粗細 */
+            color: #ffffff;       /* 文字顏色 */
+            background-color: #3b82f6; /* 按鈕顏色 */
+            border: none;           /* 去除邊框 */
+            border-radius: 8px;     /* 圓角 */
+            cursor: pointer;        /* 指標會自動變成小手指 */
+            transition: all 0.2s ease;  /* 當按鈕的樣式改變時要用 0.2 秒的時間平滑過渡 */
+        }
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);                        /* 向上浮起 2px */ 
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);   /* 按鈕底下出現藍色光暈 */
+        }
+        button:active {
+            transform: translateY(0);   /* 按下去時恢復原位 */
+        }
+        /* ================= A-Z 字母導覽按鈕 ================= */
+        .letter-btn {
+            padding: 4px 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background-color: #e2e8f0;
+            color: #475569;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .letter-btn:hover {
+            background-color: #cbd5e1;
+            transform: none; /* 取消主按鈕的上浮效果 */
+            box-shadow: none;
+        }
+        /* 被選中的字母按鈕樣式 */
+        .letter-btn.active {
+            background-color: #3b82f6;
+            color: #ffffff;
+        }
+        /* ================= 單字卡片樣式 ================= */
+        .word-item {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        .word-header {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+        .word-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #1e293b;
+        }
+        .word-pos {
+            font-size: 0.85rem;
+            font-style: italic;
+            color: #64748b;
+        }
+        .word-meaning {
+            font-size: 0.95rem;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+        .word-example {
+            font-size: 0.85rem;
+            color: #475569;
+            background-color: #ffffff;
+            padding: 6px 8px;
+            border-left: 3px solid #3b82f6;
+            border-radius: 0 4px 4px 0;
+        }
+    </style>
 </head>
-<body class="bg-slate-100 min-h-screen p-6 font-sans">
-
-    <div class="max-w-2xl mx-auto space-y-6">
-        
-        <!-- 標題區 -->
-        <header class="text-center">
-            <h1 class="text-3xl font-extrabold text-blue-600">📚 專屬英文練習站</h1>
-            <p class="text-gray-500 mt-2">點擊卡片觀看中文翻譯，或開啟測驗模式練習</p>
-        </header>
-
-        <!-- 區塊一：隨機測驗模式 -->
-        <section class="bg-white p-6 rounded-xl shadow-md border border-blue-100">
-            <h2 class="text-xl font-bold text-gray-800 mb-3">🎯 隨機小測驗</h2>
-            <div id="quiz-box" class="space-y-3">
-                <p id="quiz-question" class="text-gray-600">點擊下方按鈕開始測驗！</p>
-                <div id="quiz-answer" class="hidden p-3 bg-blue-50 text-blue-800 rounded-lg"></div>
+<body>
+    <div class="card">
+        <div id="main-menu">
+            <h1>英文單字學習測驗</h1>
+            <p style="color: #64748b; margin-bottom: 25px;">請選擇功能操作 :</p>
+            <div class="menu-group">
+                <button onclick="showPractice('c2e')">中翻英</button>
+                <button onclick="showPractice('e2c')">英翻中</button>
             </div>
-            <div class="mt-4 flex gap-2">
-                <button onclick="startQuiz()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition">
-                    抽一題
-                </button>
-                <button id="show-ans-btn" onclick="showAnswer()" class="hidden bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition">
-                    顯示答案
-                </button>
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #ffffff;">
+            <div class="menu-group">
+                <button onclick="showDictionary()" style="background-color: #64748b;">單字庫</button>
             </div>
-        </section>
-
-        <!-- 區塊二：單字卡列表 -->
-        <section class="bg-white p-6 rounded-xl shadow-md">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">📖 單字卡庫</h2>
-            <div class="space-y-4">
-                {% for item in words %}
-                <div class="p-4 border rounded-xl hover:border-blue-400 transition bg-slate-50">
-                    <div class="flex justify-between items-center">
-                        <span class="text-2xl font-bold text-blue-600">{{ item.word }}</span>
-                        <!-- 點讀發音按鈕 -->
-                        <button onclick="speak('{{ item.word }}')" class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-semibold hover:bg-blue-200">
-                            🔊 發音
-                        </button>
-                    </div>
-                    
-                    <!-- 點擊展開/收合翻譯 -->
-                    <div onclick="this.querySelector('.detail').classList.toggle('hidden')" class="mt-3 cursor-pointer">
-                        <span class="text-sm text-gray-400">點擊查看釋義與例句...</span>
-                        <div class="detail hidden mt-2 pt-2 border-t border-gray-200">
-                            <p class="font-semibold text-gray-700">【中文】：{{ item.definition }}</p>
-                            <p class="text-sm italic text-gray-500 mt-1">【例句】：{{ item.example }}</p>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </section>
-
+        </div>
+        <div id="practice-screen" style="display: none;"> 
+            <h2 id="practice-title">單字測驗</h2>
+            <div id="quiz-question" style="font-size: 1.5rem; font-weight: bold; margin: 20px 0; color: #1e293b;">顯示題目</div>  
+            <input type="text" id="user-input" placeholder="請輸入答案..." style="width: 100%; padding: 10px; font-size: 1rem; border: 2px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; margin-bottom: 12px;">
+            <button id="btn-submit" onclick="checkAnswer()" style="width: 100%; margin-bottom: 10px;">提交答案</button>
+            <div id="feedback" style="font-weight: bold; margin-bottom: 15px; min-height: 24px;"></div>
+            <button onclick="showMainMenu()" style="background-color: #94a3b8; width: 100%;">返回主選單</button>
+        </div>
+        <div id="dict-screen" style="display: none;">
+            <h2>單字庫</h2>
+            <div id="alphabet-nav" style="display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; margin-bottom: 15px;"></div>   
+            <div id="word-list" style="text-align: left; max-height: 250px; overflow-y: auto; padding-right: 5px; margin-bottom: 15px;"></div>  
+            <button onclick="showMainMenu()" style="background-color: #94a3b8; width: 100%;">返回主選單</button>
+        </div>
     </div>
-
-    <!-- 前端互動腳本 -->
     <script>
-        // 1. 內建免費發音 API (Text-To-Speech)
-        function speak(text) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US'; // 標準美式英文發音
-            window.speechSynthesis.speak(utterance);
-        }
+    // 1. 單字庫資料 (支援一個單字有多個詞性、意思與例句)
+    const dictionary = [
+        { word: "aboard", definitions: [ { pos: "adv.", meaning: "登上（交通工具）", example: "Adam waved goodbye to his family and went aboard." }, { pos: "prep.", meaning: "登上（交通工具）", example: "When all the passengers are aboard the bus, it will leave." } ] },
+        { word: "airline", definitions: [ { pos: "n.", meaning: "航空公司", example: "Signing up for our airline's membership program allows you to save up mileage and get discounts for your future trips." } ] },
+        { word: "alcohol", definitions: [ { pos: "n.", meaning: "酒精", example: "Alcohol can be used to kill bacteria." }, { pos: "n.", meaning: "含酒精之飲料", example: "Beer and wine are different kinds of alcohol." } ] },
+        { word: "allowance", definitions: [ { pos: "n.", meaning: "用錢", example: "I get a weekly allowance of NT$500 from my parents." }, { pos: "n.", meaning: "津貼", example: "Business people often get a travel allowance from their company to pay for their hotel and meals." } ] },
+        { word: "almond", definitions: [ { pos: "n.", meaning: "杏仁；扁桃樹", example: "My sister loves to put nuts, like almonds, on top of her ice cream." } ] },
+        { word: "ambulance", definitions: [ { pos: "n.", meaning: "救護車", example: "The law requires all cars to give way to any ambulance with its sirens on." } ] },
+        { word: "automobile/auto", definitions: [ { pos: "n.", meaning: "車子", example: "Joe doesn't have enough money to buy an automobile, so he takes the bus to work." } ] },
+        { word: "bacon", definitions: [ { pos: "n.", meaning: "培根", example: "I like to eat bacon and eggs for breakfast." } ] },
+        { word: "bargain", definitions: [ { pos: "n.", meaning: "交易；協議", example: "Joan made a bargain with the carpenter—if he finished building the cabinets quickly, she'd give him more money." }, { pos: "n.", meaning: "划算的交易；便宜貨 (= good deal)", example: "Buying the house at such a low price was a real bargain." }, { pos: "vi.", meaning: "講價；談條件 (= negotiate)", example: "We bargained with the fruit seller until he lowered his prices." } ] },
+        { word: "bitter", definitions: [ { pos: "adj.", meaning: "苦的", example: "This coffee is terribly bitter and needs some sugar to make it easy to drink." }, { pos: "adj.", meaning: "天氣嚴寒的", example: "I opened the door and was immediately struck by the bitter cold outside." }, { pos: "adj.", meaning: "怨恨的；充滿仇恨的；無法釋懷的", example: "The bitter old man spent all of his time thinking about all the things that made him mad." } ] },
+        { word: "blouse", definitions: [ { pos: "n.", meaning: "（女裝的）上衣", example: "Mary had trouble deciding which blouse went best with her new skirt." } ] },
+        { word: "bookcase", definitions: [ { pos: "n.", meaning: "書架", example: "Dr. Hill's bookcase is filled with medical books and patient records." } ] },
+        { word: "brake", definitions: [ { pos: "n.", meaning: "剎車（常用複數形）", example: "The man had to hit the brakes hard when a dog ran out in front of his car." }, { pos: "vt. vi.", meaning: "剎車", example: "I fell on another passenger when the bus driver braked suddenly." } ] },
+        { word: "brunch", definitions: [ { pos: "n.", meaning: "早午餐", example: "Pamela won't have breakfast because she'll meet her friends for brunch at 11 a.m." } ] },
+        { word: "buffet", definitions: [ { pos: "n.", meaning: "自助餐", example: "If you want to try a lot of different foods, you can go to a buffet in a good hotel restaurant." } ] },
+        { word: "cabin", definitions: [ { pos: "n.", meaning: "小木屋", example: "Bill used to spend his holidays in a lovely cabin by a lake in northern Canada." }, { pos: "n.", meaning: "船艙；機艙", example: "Airline passengers aren't usually allowed to go into the pilots' cabin." } ] },
+        { word: "cabinet", definitions: [ { pos: "n.", meaning: "櫥櫃；展示櫃", example: "Lily took some aspirin from her medicine cabinet to treat her headache." }, { pos: "n.", meaning: "政府內閣；內閣人員", example: "The prime minister will choose his new cabinet very soon." } ] },
+        { word: "carriage", definitions: [ { pos: "n.", meaning: "馬車", example: "People in the 19th century got around by horse-drawn carriage." } ] },
+        { word: "chew", definitions: [ { pos: "vt. vi.", meaning: "咀嚼", example: "You should chew food well before swallowing it." } ] },
+        { word: "chimney", definitions: [ { pos: "n.", meaning: "煙囪", example: "It is said that Santa Claus climbs down chimneys to deliver gifts on Christmas Eve." } ] },
+        { word: "closet", definitions: [ { pos: "n.", meaning: "衣櫥；儲藏室", example: "Tina often goes through her closet and picks out old clothes that she wants to give away to make room for new ones." } ] },
+        { word: "cocktail", definitions: [ { pos: "n.", meaning: "雞尾酒", example: "Most cocktails are just a mix of different alcohols and are not hard to make." } ] },
+        { word: "coconut", definitions: [ { pos: "n.", meaning: "椰子", example: "Bruce was almost killed when a coconut hit him on the head on a beach in Thailand." } ] },
+        { word: "collar", definitions: [ { pos: "n.", meaning: "衣領", example: "The collar of my shirt was too tight, so I found it hard to breathe." } ] },
+        { word: "costume", definitions: [ { pos: "n.", meaning: "服裝", example: "The actors were all dressed in 16th-century costumes throughout the movie." } ] },
+        { word: "cottage", definitions: [ { pos: "n.", meaning: "（鄉間）小屋", example: "We dream of buying a little cottage in the countryside to retire in." } ] },
+        { word: "crane", definitions: [ { pos: "n.", meaning: "起重機；吊車", example: "The construction workers often use a crane to lift and move heavy things while putting up or tearing down a building." }, { pos: "n.", meaning: "鶴", example: "A rare crane flew into Taiwan in 2016 and gained local fame..." }, { pos: "vt. vi.", meaning: "伸長（脖子）；探著身子（看）", example: "The small girl craned her neck to see the band onstage, but she could not see over the tall people." } ] },
+        { word: "crispy", definitions: [ { pos: "adj.", meaning: "脆的", example: "I like crispy toast, instead of soft bread, for my breakfast." } ] },
+        { word: "cupboard", definitions: [ { pos: "n.", meaning: "櫥櫃；壁櫥", example: "Most kitchen cupboards contain at least some sugar, rice, flour, salt, and pepper." } ] },
+        { word: "dairy", definitions: [ { pos: "n.", meaning: "乳品廠", example: "The farm has a small dairy where they make cheese." }, { pos: "adj.", meaning: "牛乳的", example: "I can't eat dairy products such as yogurt and cheese." } ] },
+        { word: "depart", definitions: [ { pos: "vi.", meaning: "離開", example: "The train departs from platform one at noon." } ] },
+        { word: "departure", definitions: [ { pos: "n.", meaning: "離開", example: "What is the departure time for the flight to Kaohsiung?" } ] },
+        { word: "dessert", definitions: [ { pos: "n.", meaning: "甜點", example: "Cindy and James went to a fancy restaurant last week that included a three-course meal and ended with an elegant dessert created by the chef." } ] },
+        { word: "dine", definitions: [ { pos: "vi.", meaning: "吃正餐；吃晚飯", example: "I don't feel like cooking; let's dine out tonight." } ] },
+        { word: "dock", definitions: [ { pos: "n.", meaning: "碼頭；修船場", example: "As a child, Nora liked to sit on the docks and watch the boats." } ] },
+        { word: "doughnut/donut", definitions: [ { pos: "n.", meaning: "甜甜圈", example: "At the café, I got a cup of coffee, and a doughnut with chocolate frosting and sprinkles on it." } ] }, 
+        { word: "dumpling", definitions: [ { pos: "n.", meaning: "餃子", example: "We decided to get some fried dumplings for dinner. Mine were stuffed with cabbage, while my sister's were stuffed with pork." } ] }, 
+        { word: "dye", definitions: [ { pos: "vt.", meaning: "使染色", example: "The sunset dyed the sky red." }, { pos: "n.", meaning: "染料", example: "Rose used some blue dye to change the color of her T-shirts." } ] }, 
+        { word: "elevator", definitions: [ { pos: "n.", meaning: "電梯", example: "We got into the elevator and pressed the button to go to the 23rd floor, hoping the ride up wouldn't take long." } ] }, 
+        { word: "essential", definitions: [ { pos: "adj.", meaning: "必要的", example: "A passport is essential when we travel abroad." }, { pos: "n.", meaning: "必需品", example: "Food, shelter, and clothing are essentials for living." } ] }, 
+        { word: "fare", definitions: [ { pos: "n.", meaning: "車費", example: "What is the bus fare from Taichung to Kaohsiung?" } ] }, 
+        { word: "fence", definitions: [ { pos: "n.", meaning: "柵欄；籬笆", example: "The rancher put a high fence around his land so no wild animals could come in and attack his cows." } ] }, 
+        { word: "ferry", definitions: [ { pos: "n.", meaning: "渡輪", example: "They waited for the ferry to return so they could cross the river." } ] }, 
+        { word: "fireplace", definitions: [ { pos: "n.", meaning: "壁爐", example: "Greg knew that someone had been in the house because the coals in the fireplace were still glowing." } ] }, 
+        { word: "flavor", definitions: [ { pos: "n.", meaning: "味道；口味", example: "Which flavor of ice cream do you want: chocolate or vanilla?" }, { pos: "vt.", meaning: "給⋯調味", example: "Kate flavored the fish with sugar and vinegar." } ] }, 
+        { word: "flour", definitions: [ { pos: "n.", meaning: "麵粉", example: "Leo prefers healthy types of bread that are made with whole-wheat flour and other grains as their main ingredient." } ] }, 
+        { word: "freezer", definitions: [ { pos: "n.", meaning: "冷凍櫃", example: "Grace has a large turkey in the freezer, which she plans to cook for Thanksgiving dinner next month." } ] }, 
+        { word: "furnish", definitions: [ { pos: "vt.", meaning: "布置", example: "Martin's new house is furnished in the Victorian style." } ] }, 
+        { word: "gear", definitions: [ { pos: "n.", meaning: "裝備", example: "Norman wants to go fishing but doesn't have any gear besides fishing boots." } ] }, 
+        { word: "gown", definitions: [ { pos: "n.", meaning: "禮服", example: "My sister wore a white gown to the formal party." } ] }, 
+        { word: "grocery", definitions: [ { pos: "n.", meaning: "食品雜貨", example: "Danny went shopping for his weekly groceries but forgot to buy milk and bread." }, { pos: "n.", meaning: "食品雜貨店", example: "Danny stopped at the grocery on his way home and got some milk and bread." } ] }, 
+        { word: "heater", definitions: [ { pos: "n.", meaning: "暖氣機；暖爐", example: "It will feel much warmer inside the car if you turn on the heater." } ] }, 
+        { word: "helicopter", definitions: [ { pos: "n.", meaning: "直升機", example: "Some skiers use helicopters to get to remote mountain slopes." } ] }, 
+        { word: "household", definitions: [ { pos: "n.", meaning: "一家人；家屬", example: "The charitable organization is collecting money for low-income households." }, { pos: "adj.", meaning: "家庭的", example: "Household expenses, such as water and electricity, tend to be higher in summer." } ] }, 
+        { word: "housework", definitions: [ { pos: "n.", meaning: "家務；家事", example: "Lydia's husband told her that he would share the housework." } ] }, 
+        { word: "hut", definitions: [ { pos: "n.", meaning: "簡陋小屋；茅舍", example: "The poor old man lived in a little wooden hut." } ] }, 
+        { word: "immigrate", definitions: [ { pos: "vi.", meaning: "移居入境", example: "During the past ten years, many foreigners have immigrated to my country." } ] }, 
+        { word: "immigration", definitions: [ { pos: "n.", meaning: "移居", example: "After 911, the US government started to control immigration carefully." } ] }, 
+        { word: "jeep", definitions: [ { pos: "n.", meaning: "吉普車", example: "The man jumped into his jeep and quickly drove up the hill." } ] }, 
+        { word: "jelly", definitions: [ { pos: "n.", meaning: "果凍", example: "I would like to have some almond jelly for dessert." } ] }, 
+        { word: "jet", definitions: [ { pos: "n.", meaning: "噴射", example: "We traveled to Paris by jet on my wife's birthday." } ] }, 
+        { word: "journey", definitions: [ { pos: "n.", meaning: "旅行；行程", example: "Phil went on a journey around Italy for ten days last year." } ] }, 
+        { word: "juicy", definitions: [ { pos: "adj.", meaning: "多汁的", example: "The steak was cooked to perfection as the meat was tender and juicy." } ] }, 
+        { word: "knit", definitions: [ { pos: "vt.", meaning: "編織", example: "Joan is knitting a sweater for her son." } ] }, 
+        { word: "laundry", definitions: [ { pos: "n.", meaning: "洗衣店", example: "Sarah is so busy these days that she sends her dirty clothes to the laundry." }, { pos: "n.", meaning: "待洗、已洗或送洗的衣物", example: "Eric does his laundry on Sundays as this is his only free day." } ] }, 
+        { word: "leather", definitions: [ { pos: "n.", meaning: "皮革", example: "Leather products are made from the skins of animals." } ] }, 
+        { word: "lemonade", definitions: [ { pos: "n.", meaning: "檸檬水", example: "Lemonade provides rich amounts of vitamin C and helps to improve skin quality." } ] }, 
+        { word: "lettuce", definitions: [ { pos: "n.", meaning: "萵苣；生菜", example: "Caesar salad is a popular kind of salad that mixes lettuce with lemon juice dressing." } ] }, 
+        { word: "lick", definitions: [ { pos: "vt.", meaning: "舔", example: "Dogs show love toward their owners by licking their hands." } ] }, 
+        { word: "linen", definitions: [ { pos: "n.", meaning: "亞麻；亞麻布", example: "Clothes made of linen are very suitable for wearing on hot summer days." } ] }, 
+        { word: "liquor", definitions: [ { pos: "n.", meaning: "烈酒", example: "Drinking a lot of hard liquor can damage our health." } ] }, 
+        { word: "loaf", definitions: [ { pos: "n.", meaning: "一條", example: "In the bakery, many loaves of bread are being baked in the oven." } ] }, 
+        { word: "lollipop", definitions: [ { pos: "n.", meaning: "棒棒糖", example: "My mother doesn't want me to have lollipops or any other candy because they will damage my teeth." } ] }, 
+        { word: "march", definitions: [ { pos: "n.", meaning: "示威遊行；行軍", example: "Supporters of the president will hold a march in Taipei next week." }, { pos: "vi.", meaning: "示威遊行；行進", example: "They marched into the office and demanded to see the manager." } ] }, 
+        { word: "melon", definitions: [ { pos: "n.", meaning: "甜瓜；瓜", example: "I made a fruit salad with strawberries, mangoes, grapes, and two kinds of melon." } ] }, 
+        { word: "microwave", definitions: [ { pos: "n.", meaning: "微波爐；微波", example: "Terry took his lunch out of the fridge and heated it up in the microwave." }, { pos: "vt.", meaning: "微波", example: "Esther microwaved the cold pizza for one minute so that she could eat it hot." } ] }, 
+        { word: "mushroom", definitions: [ { pos: "n.", meaning: "洋菇；蕈", example: "Not all mushrooms are edible, so never pick and eat them in the forest." }, { pos: "vi.", meaning: "急速增加", example: "The city is quickly developing with new buildings mushrooming everywhere." } ] }, 
+        { word: "nap", definitions: [ { pos: "n.", meaning: "小睡", example: "In Taiwan, young students are required to take a nap after lunch." }, { pos: "vi.", meaning: "小睡；打盹", example: "Tom stayed up dancing late last night, so he was very tired and napped at work this morning." } ] }, 
+        { word: "necktie", definitions: [ { pos: "n.", meaning: "領帶", example: "Hank wore a blue necktie to go with his suit." } ] },
+        { word: "onion", definitions: [ { pos: "n.", meaning: "洋蔥", example: "Cutting onions makes me cry." } ] }, 
+        { word: "oral", definitions: [ { pos: "adj.", meaning: "口頭的；口述的", example: "Before stories were ever written down, oral histories were passed down from generation to generation." }, { pos: "adj.", meaning: "口服的；口腔的", example: "The dentist told the children that they should brush their teeth twice a day to have good oral health." } ] }, 
+        { word: "oven", definitions: [ { pos: "n.", meaning: "烤箱", example: "The cake should be left in the oven for at least 30 minutes." } ] }, 
+        { word: "overcoat", definitions: [ { pos: "n.", meaning: "外套；大衣", example: "You'd better wear your heavy overcoat today; it's very cold." } ] }, 
+        { word: "pancake", definitions: [ { pos: "n.", meaning: "薄煎餅；鬆餅", example: "Pancakes and maple syrup go really well together." } ] }, 
+        { word: "parade", definitions: [ { pos: "n.", meaning: "遊行", example: "The town held a parade to celebrate the country's independence day." }, { pos: "vi.", meaning: "遊行", example: "The entertainers paraded through the town, amusing everyone who saw them." } ] }, 
+        { word: "pasta", definitions: [ { pos: "n.", meaning: "義大利麵", example: "Spaghetti is just one type of pasta, though it probably is the most popular." } ] }, 
+        { word: "peanut", definitions: [ { pos: "n.", meaning: "花生", example: "The girl with a serious peanut allergy can't even be around peanuts, or else she might swell up." } ] }, 
+        { word: "pepper", definitions: [ { pos: "n.", meaning: "胡椒粉", example: "Jenny added some pepper to her steak to give it more flavor." }, { pos: "n.", meaning: "甜椒", example: "This salad has lettuce, tomatoes, cucumber, and yellow peppers in it." } ] }, 
+        { word: "pickle", definitions: [ { pos: "n.", meaning: "醃黃瓜；泡菜", example: "Pickles are often put on hamburgers to add a sour flavor." } ] }, 
+        { word: "pineapple", definitions: [ { pos: "n.", meaning: "鳳梨", example: "Pineapples are my favorite fruit, but I have to handle them carefully because their skins are sharp!" } ] }, 
+        { word: "recipe", definitions: [ { pos: "n.", meaning: "食譜", example: "Tell me the recipe for this dish; I want to try to make it myself." } ] }, 
+        { word: "refund", definitions: [ { pos: "n.", meaning: "退款；退還", example: "It took two months to get a refund after I canceled my trip to India." }, { pos: "vt.", meaning: "退款；退還", example: "Please go to the desk on the second floor, and we'll refund your money." } ] }, 
+        { word: "robe", definitions: [ { pos: "n.", meaning: "袍子", example: "After her shower, Sabrina put on a robe before walking through the house." } ] }, 
+        { word: "rug", definitions: [ { pos: "n.", meaning: "地毯", example: "A nice rug on the floor can really add color and life to a room." } ] }, 
+        { word: "sauce", definitions: [ { pos: "n.", meaning: "醬汁", example: "The chicken here is good, but the best part is the sauce that covers the dish." } ] }, 
+        { word: "sausage", definitions: [ { pos: "n.", meaning: "香腸；臘腸", example: "Good German sausages are much thicker than hot dogs, and much tastier." } ] }, 
+        { word: "scrub", definitions: [ { pos: "vt.", meaning: "洗刷", example: "The housekeeper was on her knees, scrubbing the floor." }, { pos: "n.", meaning: "洗刷", example: "The housekeeper was on her knees, scrubbing the floor." } ] }, 
+        { word: "sew", definitions: [ { pos: "vt.", meaning: "縫", example: "A button has come off my shirt; I'll have to sew it back on." } ] }, 
+        { word: "shave", definitions: [ { pos: "vt. vi.", meaning: "刮；剃", example: "Most men need to shave their face every day." }, { pos: "n.", meaning: "刮鬍子", example: "It is a real treat to go to an old-fashioned barber and get a shave and haircut." } ] }, 
+        { word: "sip", definitions: [ { pos: "vt. vi.", meaning: "啜飲", example: "Vivi spent all afternoon looking out of the window and slowly sipping sweet tea." }, { pos: "n.", meaning: "一小口", example: "Kyle took a sip of the coffee to see if it was strong enough for him." } ] }, 
+        { word: "sleeve", definitions: [ { pos: "n.", meaning: "袖子", example: "The little girl pulled on her mother's sleeve." } ] }, 
+        { word: "spaghetti", definitions: [ { pos: "n.", meaning: "義大利細麵條", example: "To make this spaghetti dish, you'll need pasta, tomato sauce, pork, and some spices." } ] }, 
+        { word: "spice", definitions: [ { pos: "n.", meaning: "香料；調味品", example: "Indian food uses lots of different spices. That's why it's so tasty." }, { pos: "n.", meaning: "趣味；調劑品", example: "Variety is the spice of life." } ] }, 
+        { word: "spinach", definitions: [ { pos: "n.", meaning: "波菜", example: "This salad has huge green leaves of spinach and delicious dressing." } ] }, 
+        { word: "stitch", definitions: [ { pos: "n.", meaning: "一針", example: "How many stitches did you get for that cut on your leg?" }, { pos: "vt. vi.", meaning: "縫紉", example: "The tailor stitched up the tear in Will's suit." } ] }, 
+        { word: "stocking", definitions: [ { pos: "n.", meaning: "長襪", example: "Most women wear silk stockings with skirts to make their legs look nicer." } ] }, 
+        { word: "stove", definitions: [ { pos: "n.", meaning: "爐子；火爐", example: "When I woke up, I could smell bacon cooking on the stove." } ] }, 
+        { word: "tangerine", definitions: [ { pos: "n.", meaning: "橘子；柑橘；橘紅色", example: "Tangerines and oranges are quite similar fruits, but there are also some differences between the two." } ] }, 
+        { word: "thread", definitions: [ { pos: "n.", meaning: "線", example: "I need a needle and some thread to sew up the hole in my shirt." } ] }, 
+        { word: "transport", definitions: [ { pos: "vt.", meaning: "運輸；運送", example: "I transported my new table home in a rental truck." }, { pos: "n.", meaning: "交通工具；運輸", example: "Cars are the most popular form of transport in the US." } ] }, 
+        { word: "transportation", definitions: [ { pos: "n.", meaning: "運輸", example: "In big cities, people are encouraged to use public transportation to get around." } ] }, 
+        { word: "underwear", definitions: [ { pos: "n.", meaning: "內衣", example: "Lisa took all the clean clothes out of the washing machine, including the socks and underwear." } ] }, 
+        { word: "van", definitions: [ { pos: "n.", meaning: "客貨車；廂型車", example: "Scott decided to buy a van after his wife gave birth to their fourth child." } ] }, 
+        { word: "vehicle", definitions: [ { pos: "n.", meaning: "車輛", example: "You can't drive this vehicle until you're 18." } ] }, 
+        { word: "vessel", definitions: [ { pos: "n.", meaning: "船艦", example: "A lot of fishing vessels are in the harbor today." } ] }, 
+        { word: "vest", definitions: [ { pos: "n.", meaning: "背心", example: "Policemen are required to wear bulletproof vests when they are on duty." } ] }, 
+        { word: "wagon", definitions: [ { pos: "n.", meaning: "馬車", example: "The farmer went to the market, pulling a wagon that was filled with crops." } ] }, 
+        { word: "weave", definitions: [ { pos: "vt.", meaning: "編織", example: "The women in the poor Indian village made a living weaving baskets for tourists." } ] }, 
+        { word: "yolk", definitions: [ { pos: "n.", meaning: "蛋黃", example: "The cake recipe said to beat the yolks of two eggs and then mix them with the flour." } ] },
+        { word: "accomplish", definitions: [ { pos: "vt.", meaning: "達成", example: "After much hard work, Steve accomplished his goal of finishing two master's degrees at the same time." } ] }, { word: "adapt", definitions: [ { pos: "vt. vi.", meaning: "適應", example: "Grandpa found it hard to adapt to life in America and moved back to Taiwan." }, { pos: "vt.", meaning: "改編", example: "The best-selling novel has been adapted for a film." } ] }, { word: "afford", definitions: [ { pos: "vt.", meaning: "負擔得起", example: "I can't afford to rent an apartment in downtown Taipei. It's too expensive!" } ] }, { word: "aggressive", definitions: [ { pos: "adj.", meaning: "好鬥的；具侵略性的", example: "Even the friendliest animal can turn aggressive when threatened." }, { pos: "adj.", meaning: "積極進取的", example: "This aggressive woman goes all out for success." } ] }, { word: "alert", definitions: [ { pos: "adj.", meaning: "警覺的", example: "When you walk in the forest at night, your senses become alert to every sound and smell." }, { pos: "vt.", meaning: "使警覺", example: "The doctor alerted me to the danger of smoking heavily." }, { pos: "n.", meaning: "警覺；警報", example: "The police are on the alert for a couple in a blue car who just robbed a bank." } ] }, { word: "ambition", definitions: [ { pos: "n.", meaning: "雄心；抱負", example: "Lily will do whatever it takes to achieve her ambition of becoming a famous musician." } ] }, { word: "ambitious", definitions: [ { pos: "adj.", meaning: "有雄心壯志的；野心勃勃的", example: "The girl wants to become a nuclear engineer when she grows up. She's very ambitious." } ] }, { word: "authority", definitions: [ { pos: "n.", meaning: "權威", example: "Successful parenting lies more in good communication than in insisting on having authority over your children." }, { pos: "n.", meaning: "當局；官方", example: "Police authorities claim there has been a reduction in the crime rate this year." } ] }, { word: "awake", definitions: [ { pos: "vt. vi.", meaning: "醒來；喚醒", example: "Aaron awoke to find himself lying on a hospital bed." }, { pos: "adj.", meaning: "醒著的", example: "That cup of coffee kept me awake all night." } ] }, { word: "awaken", definitions: [ { pos: "vt. vi.", meaning: "喚醒", example: "A scream in the middle of the night awakened me." } ] }, { word: "aware", definitions: [ { pos: "adj.", meaning: "注意到的；意識到的", example: "We were so focused on the speech that we were not aware that it was past lunchtime." } ] }, { word: "awkward", definitions: [ { pos: "adj.", meaning: "尷尬的；棘手的", example: "Bobby often embarrasses me by asking awkward questions about my relationship with Grace." }, { pos: "adj.", meaning: "笨拙的", example: "Young kittens often walk in an awkward sideways manner before their muscles develop fully." } ] }, { word: "bald", definitions: [ { pos: "adj.", meaning: "禿頭的", example: "When Nick started to lose his hair, he decided to shave his head completely bald." } ] }, { word: "behavior", definitions: [ { pos: "n.", meaning: "行為", example: "The boy was praised for his polite behavior toward his teachers." } ] }, { word: "bold", definitions: [ { pos: "adj.", meaning: "大膽的", example: "If a scary animal sees you in the forest, be bold and don't run away." } ] }, { word: "bravery", definitions: [ { pos: "n.", meaning: "勇敢；勇氣", example: "The knight showed bravery by battling and defeating the fierce dragon." } ] }, { word: "broke", definitions: [ { pos: "adj.", meaning: "身無分文的；破產的", example: "I've got no money. I am broke." } ] }, { word: "brutal", definitions: [ { pos: "adj.", meaning: "殘忍的", example: "The war showed the brutal side of mankind." } ] }, { word: "capable", definitions: [ { pos: "adj.", meaning: "能夠…", example: "Doris is capable of organizing a big party successfully." }, { pos: "adj.", meaning: "有能力的", example: "Jonathan is a capable lawyer and wins most of his cases." } ] }, { word: "charm", definitions: [ { pos: "n.", meaning: "魅力", example: "Few can resist the charm of a pretty woman." }, { pos: "n.", meaning: "護身符", example: "Wayne is a very superstitious man and he never goes anywhere without his lucky charm." }, { pos: "vt.", meaning: "吸引；迷住", example: "All the women at the party were charmed by the handsome young doctor." } ] }, { word: "clumsy", definitions: [ { pos: "adj.", meaning: "笨手笨腳的", example: "Don't let Harry move that expensive vase. He is clumsy and tends to drop things." } ] }, { word: "concentrate", definitions: [ { pos: "vt. vi.", meaning: "專心；集中", example: "With the traffic noise outside and the TV inside, I couldn't concentrate on my studies at all." } ] }, { word: "concentration", definitions: [ { pos: "n.", meaning: "注意力；集中", example: "Peter needed his full concentration to finish his homework, so he went to a quieter room to work." } ] }, { word: "confidence", definitions: [ { pos: "n.", meaning: "信心；信任", example: "The soccer players have great confidence in their coach, as he has led them to victory for the past five years." } ] }, { word: "conquer", definitions: [ { pos: "vt.", meaning: "克服；征服", example: "Ada conquered her fear of public speaking so she could give a speech at her daughter's wedding." } ] }, { word: "conscious", definitions: [ { pos: "adj.", meaning: "有意識的", example: "The patient is badly hurt but still conscious, and he can feel everything." }, { pos: "adj.", meaning: "意識到的", example: "Brad wasn't conscious of the danger of the situation and walked into it completely unprepared." } ] }, { word: "conservative", definitions: [ { pos: "adj.", meaning: "保守的；守舊的", example: "In some religions, people wear conservative clothing that covers all of their bodies." } ] }, { word: "conventional", definitions: [ { pos: "adj.", meaning: "傳統的；慣例的", example: "At a conventional wedding, the bride wears a white gown." } ] }, { word: "courageous", definitions: [ { pos: "adj.", meaning: "無畏的；有勇氣的", example: "The courageous man ran into the burning building to save the baby." } ] }, { word: "courtesy", definitions: [ { pos: "n.", meaning: "禮貌；殷勤", example: "It is common courtesy to take off your hat before entering a house." } ] }, { word: "creative", definitions: [ { pos: "adj.", meaning: "有創造力的；獨創的", example: "I admire Matisse for his creative use of primary colors in his paintings." } ] }, { word: "creativity", definitions: [ { pos: "n.", meaning: "創造力", example: "Nowadays, children are encouraged to let their creativity be free rather than follow tradition." } ] }, { word: "cruel", definitions: [ { pos: "adj.", meaning: "殘酷的", example: "The cruel woman repeatedly posted harsh opinions about disabled people on the Internet with no feelings of remorse for the less fortunate." } ] }, { word: "cruelty", definitions: [ { pos: "n.", meaning: "殘忍；殘酷", example: "The king's cruelty was well known, and even his close friends feared to offend him." } ] }, { word: "cunning", definitions: [ { pos: "adj.", meaning: "狡猾的", example: "The salesman was cunning and knew just how to act to get the old couple to trust him." }, { pos: "n.", meaning: "狡猾；奸詐", example: "It was Tim's cunning that won him the job." } ] }, { word: "determine", definitions: [ { pos: "vt.", meaning: "決定", example: "The boss has not yet determined whether John will receive the promotion." } ] }, { word: "diligence", definitions: [ { pos: "n.", meaning: "勤勉；勤奮", example: "Thanks to the diligence of a team of volunteers, the town's streets were always clean." } ] }, { word: "diligent", definitions: [ { pos: "adj.", meaning: "勤勉的", example: "Ben is not especially smart, but he is so diligent in his studies that he always does well on exams." } ] }, { word: "dishonest", definitions: [ { pos: "adj.", meaning: "不誠實的", example: "During the job interview, Brian was dishonest about his performance in university; he was actually a lazy student with terrible grades." } ] }, { word: "drowsy", definitions: [ { pos: "adj.", meaning: "昏昏欲睡的", example: "The long ride down south made me drowsy, and I needed coffee to stay awake." } ] }, { word: "drunk", definitions: [ { pos: "adj.", meaning: "醉的", example: "Tony drank almost a dozen bottles of beer last night and was so drunk that he could hardly walk." } ] }, { word: "dumb", definitions: [ { pos: "adj.", meaning: "啞的；說不出話的", example: "Although Helen Keller was blind, deaf, and dumb, she still went to university and achieved great things." }, { pos: "adj.", meaning: "愚笨的", example: "Judy was sick of her brother asking dumb questions, so she asked him to stop." } ] }, { word: "dynamic", definitions: [ { pos: "adj.", meaning: "有活力的", example: "If the new law is passed by the government, there will be dynamic changes in the country." }, { pos: "adj.", meaning: "動態的；動力的", example: "Characterized by constant change and uncertainty, the free market is dynamic." } ] }, { word: "earnest", definitions: [ { pos: "adj.", meaning: "認真的；誠摯的", example: "We made an earnest effort to persuade Anna to accept the job as we thought she was the best candidate." } ] },
+        
+    ];
 
-        // 2. 測驗模式邏輯
-        let currentQuiz = null;
+    // DOM 元素參考
+    const mainMenu = document.getElementById('main-menu');
+    const practiceScreen = document.getElementById('practice-screen');
+    const dictScreen = document.getElementById('dict-screen');
 
-        async function startQuiz() {
-            const res = await fetch('/api/quiz');
-            currentQuiz = await res.json();
+    // 測驗相關變數
+    let currentMode = 'c2e'; 
+    let currentQuizData = null;
+    let remainingQuestions = []; 
+    let questionCount = 0;       
+    const TOTAL_QUESTIONS = 20;  
+
+    /* ================= 畫面切換控制 ================= */
+    function showMainMenu() {
+        mainMenu.style.display = 'block';
+        practiceScreen.style.display = 'none';
+        dictScreen.style.display = 'none';
+    }
+
+    function showDictionary() {
+        mainMenu.style.display = 'none';
+        practiceScreen.style.display = 'none';
+        dictScreen.style.display = 'block';
+        
+        initAlphabetNav();
+        renderDictionary('A');
+    }
+
+    /* ================= 單字庫 (A-Z) 邏輯 ================= */
+    function initAlphabetNav() {
+        const nav = document.getElementById('alphabet-nav');
+        nav.innerHTML = '';
+
+        for (let i = 65; i <= 90; i++) {
+            const letter = String.fromCharCode(i);
+            const btn = document.createElement('button');
+            btn.className = `letter-btn ${letter === 'A' ? 'active' : ''}`;
+            btn.innerText = letter;
             
-            // 朗讀該單字
-            speak(currentQuiz.word);
+            btn.onclick = function() {
+                document.querySelectorAll('.letter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderDictionary(letter);
+            };
+            
+            nav.appendChild(btn);
+        }
+    }
 
-            document.getElementById('quiz-question').innerHTML = `請聽發音並猜單字：<strong class="text-2xl text-blue-600">${currentQuiz.word}</strong>`;
-            document.getElementById('quiz-answer').classList.add('hidden');
-            document.getElementById('quiz-answer').innerHTML = `中文釋義：${currentQuiz.definition}<br><span class="italic text-sm">例句：${currentQuiz.example}</span>`;
-            document.getElementById('show-ans-btn').classList.remove('hidden');
+    function renderDictionary(letter) {
+        const container = document.getElementById('word-list');
+        container.innerHTML = '';
+
+        const filteredWords = dictionary.filter(item => 
+            item.word.toUpperCase().startsWith(letter)
+        );
+
+        if (filteredWords.length === 0) {
+            container.innerHTML = `<p style="text-align:center; color:#94a3b8; font-size:0.9rem;">查無以 ${letter} 開頭的單字。</p>`;
+            return;
         }
 
-        function showAnswer() {
-            document.getElementById('quiz-answer').classList.remove('hidden');
+        filteredWords.forEach(item => {
+            const wordCard = document.createElement('div');
+            wordCard.className = 'word-item';
+            
+            // 把該單字下的所有詞性、中文、例句組合起來
+            let defsHtml = item.definitions.map(def => `
+                <div style="margin-top: 6px;">
+                    <span class="word-pos">[${def.pos}]</span> 
+                    <span class="word-meaning">${def.meaning}</span>
+                    <div class="word-example">💡 例句：${def.example}</div>
+                </div>
+            `).join('');
+
+            wordCard.innerHTML = `
+                <div class="word-header">
+                    <span class="word-title">${item.word}</span>
+                </div>
+                ${defsHtml}
+            `;
+            container.appendChild(wordCard);
+        });
+    }
+
+    /* ================= 測驗練習邏輯 ================= */
+    function showPractice(mode) {
+        currentMode = mode;
+        mainMenu.style.display = 'none';
+        practiceScreen.style.display = 'block';
+        dictScreen.style.display = 'none';
+
+        // 恢復輸入框與提交按鈕
+        document.getElementById('user-input').style.display = 'block';
+        document.getElementById('btn-submit').style.display = 'block';
+        
+        const restartBtn = document.getElementById('btn-restart');
+        if (restartBtn) restartBtn.remove();
+
+        const titleElem = document.getElementById('practice-title');
+        titleElem.innerText = mode === 'c2e' ? '單字測驗 (中文 ➔ 英文)' : '單字測驗 (英文 ➔ 中文)';
+
+        resetQuiz();
+        nextQuestion();
+    }
+
+    function resetQuiz() {
+        questionCount = 0;
+        remainingQuestions = [...dictionary]; // 複製完整單字庫
+    }
+
+    function nextQuestion() {
+        questionCount++;
+
+        // 檢查是否超過 20 題或無題可出
+        if (questionCount > TOTAL_QUESTIONS || remainingQuestions.length === 0) {
+            showQuizSummary();
+            return;
         }
-    </script>
+
+        // 隨機抽題，並從題目池中剔除 (不重複)
+        const randomIndex = Math.floor(Math.random() * remainingQuestions.length);
+        const item = remainingQuestions[randomIndex];
+        remainingQuestions.splice(randomIndex, 1);
+
+        // 隨機選該單字的其中一種意思來考
+        const randomDef = item.definitions[Math.floor(Math.random() * item.definitions.length)];
+
+        currentQuizData = {
+            word: item.word,
+            pos: randomDef.pos,
+            meaning: randomDef.meaning,
+            allMeanings: item.definitions.map(d => d.meaning)
+        };
+
+        document.getElementById('user-input').value = '';
+        document.getElementById('feedback').innerText = '';
+        document.getElementById('user-input').disabled = false;
+
+        const questionElem = document.getElementById('quiz-question');
+        const progressText = `[${questionCount}/${Math.min(TOTAL_QUESTIONS, dictionary.length)}] `;
+
+        if (currentMode === 'c2e') {
+            questionElem.innerText = `${progressText}${currentQuizData.meaning} [${currentQuizData.pos}]`;
+        } else {
+            questionElem.innerText = `${progressText}${currentQuizData.word}`;
+        }
+
+        document.getElementById('user-input').focus();
+    }
+
+    function checkAnswer() {
+        const inputElem = document.getElementById('user-input');
+        const input = inputElem.value.trim().toLowerCase();
+        const feedbackElem = document.getElementById('feedback');
+
+        if (!input) return;
+
+        let isCorrect = false;
+
+        if (currentMode === 'c2e') {
+            isCorrect = (input === currentQuizData.word.toLowerCase());
+        } else {
+            // 英翻中：只要輸入包含任意一個正確意思即算對
+            isCorrect = currentQuizData.allMeanings.some(m => m.includes(input) || input.includes(m));
+        }
+
+        if (isCorrect) {
+            feedbackElem.innerText = "🎉 正確！太棒了！";
+            feedbackElem.style.color = "#2ecc71";
+            inputElem.disabled = true;
+            setTimeout(nextQuestion, 1000);
+        } else {
+            let correctText = currentMode === 'c2e' ? currentQuizData.word : currentQuizData.meaning;
+            feedbackElem.innerText = `❌ 答錯囉！正確答案是：${correctText}`;
+            feedbackElem.style.color = "#e74c3c";
+        }
+    }
+
+    function showQuizSummary() {
+        const questionElem = document.getElementById('quiz-question');
+        const feedbackElem = document.getElementById('feedback');
+        const inputElem = document.getElementById('user-input');
+        const submitBtn = document.getElementById('btn-submit');
+
+        questionElem.innerText = "🎊 測驗完成！";
+        feedbackElem.innerText = `你已完成這次的練習！`;
+        feedbackElem.style.color = "#3b82f6";
+        
+        inputElem.style.display = 'none';
+        submitBtn.style.display = 'none';
+
+        if (!document.getElementById('btn-restart')) {
+            const restartBtn = document.createElement('button');
+            restartBtn.id = 'btn-restart';
+            restartBtn.innerText = '🔄 再測驗一次';
+            restartBtn.style.width = '100%';
+            restartBtn.style.marginBottom = '10px';
+            restartBtn.style.backgroundColor = '#2ecc71';
+            restartBtn.onclick = function() {
+                showPractice(currentMode);
+            };
+
+            feedbackElem.parentNode.insertBefore(restartBtn, feedbackElem.nextSibling);
+        }
+    }
+
+    function handleKeyPress(e) {
+        if (e.key === 'Enter') {
+            checkAnswer();
+        }
+    }
+</script>
 </body>
-</html>
+</html> 
