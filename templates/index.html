@@ -5,55 +5,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>英文單字學習測驗</title>
     <style>
-        body{
+        /* 全域基礎設定 */
+        body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #ffffff;
-            color: #3b75c7;
+            background-color: #f1f5f9;
+            color: #334155;
             display: flex;
-            justify-content: center; /* 水平居中 */
-            align-items: center;     /* 垂直居中 */
-            min-height: 100vh;       /* 確保網頁高跟螢幕一樣高 */
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px 0;
+            box-sizing: border-box;
         }
-        .cord{
+
+        /* 主卡片容器 */
+        .card {
             background-color: #ffffff;
             padding: 30px;
-            border-radius: 16px;                             /* 圓角 */
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);   /* 淡淡的陰影 */
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
             width: 100%;
-            max-width: 400px;                                /* 限制最大寬度 */
+            max-width: 420px;
             text-align: center;
         }
+
         h1 {
             margin-top: 0;
             color: #1e293b;
             font-size: 1.5rem;
         }
+
+        /* 選單按鈕群組 */
         .menu-group {
             display: flex;
-            flex-direction: column; /* 按鈕垂直一排排列 */
-            gap: 12px;              /* 按鈕之間的間距 */
+            flex-direction: column;
+            gap: 12px;
         }
+
+        /* 萬用按鈕基本樣式 */
         button {
-            padding: 12px 20px;     /* 內邊距 */
-            font-size: 1rem;        /* 文字大小 */
-            font-weight: 600;       /* 字體粗細 */
-            color: #ffffff;       /* 文字顏色 */
-            background-color: #3b82f6; /* 按鈕顏色 */
-            border: none;           /* 去除邊框 */
-            border-radius: 8px;     /* 圓角 */
-            cursor: pointer;        /* 指標會自動變成小手指 */
-            transition: all 0.2s ease;  /* 當按鈕的樣式改變時要用 0.2 秒的時間平滑過渡 */
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #ffffff;
+            background-color: #3b82f6;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
+
         button:hover {
             opacity: 0.9;
-            transform: translateY(-2px);                        /* 向上浮起 2px */ 
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);   /* 按鈕底下出現藍色光暈 */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
+
         button:active {
-            transform: translateY(0);   /* 按下去時恢復原位 */
+            transform: translateY(0);
         }
-        /* ================= A-Z 字母導覽按鈕 ================= */
+
+        /* 詞性多選按鈕樣式 */
+        .pos-select-btn {
+            background-color: #f1f5f9;
+            color: #475569;
+            border: 2px solid #cbd5e1;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        /* 詞性按鈕選中（被按住）狀態 */
+        .pos-select-btn.selected {
+            background-color: #8b5cf6 !important;
+            color: #ffffff !important;
+            border-color: #7c3aed !important;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* A-Z 字母導覽按鈕 */
         .letter-btn {
             padding: 4px 8px;
             font-size: 0.85rem;
@@ -64,17 +97,19 @@
             cursor: pointer;
             transition: all 0.2s;
         }
+
         .letter-btn:hover {
             background-color: #cbd5e1;
-            transform: none; /* 取消主按鈕的上浮效果 */
+            transform: none;
             box-shadow: none;
         }
-        /* 被選中的字母按鈕樣式 */
+
         .letter-btn.active {
             background-color: #3b82f6;
             color: #ffffff;
         }
-        /* ================= 單字卡片樣式 ================= */
+
+        /* 單字卡片樣式 */
         .word-item {
             background-color: #f8fafc;
             border: 1px solid #e2e8f0;
@@ -82,27 +117,33 @@
             padding: 12px;
             margin-bottom: 10px;
         }
+
         .word-header {
             display: flex;
             align-items: baseline;
             gap: 8px;
             margin-bottom: 4px;
         }
+
         .word-title {
             font-size: 1.1rem;
             font-weight: bold;
             color: #1e293b;
         }
+
         .word-pos {
             font-size: 0.85rem;
             font-style: italic;
             color: #64748b;
+            font-weight: bold;
         }
+
         .word-meaning {
             font-size: 0.95rem;
             color: #334155;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
+
         .word-example {
             font-size: 0.85rem;
             color: #475569;
@@ -110,35 +151,62 @@
             padding: 6px 8px;
             border-left: 3px solid #3b82f6;
             border-radius: 0 4px 4px 0;
+            margin-top: 4px;
         }
     </style>
 </head>
 <body>
     <div class="card">
+        <!-- 1. 主選單畫面 -->
         <div id="main-menu">
             <h1>英文單字學習測驗</h1>
-            <p style="color: #64748b; margin-bottom: 25px;">請選擇功能操作 :</p>
+            <p style="color: #64748b; margin-bottom: 25px;">請選擇練習功能：</p>
+            
             <div class="menu-group">
-                <button onclick="showPractice('c2e')">中翻英</button>
-                <button onclick="showPractice('e2c')">英翻中</button>
+                <button onclick="showPractice('c2e')">中文 ➔ 英文 練習</button>
+                <button onclick="showPractice('e2c')">英文 ➔ 中文 練習</button>
+                <button onclick="showPractice('pos')" style="background-color: #8b5cf6;">🏷️ 詞性多選</button>
             </div>
-            <hr style="margin: 20px 0; border: none; border-top: 1px solid #ffffff;">
+
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #e2e8f0;">
+
             <div class="menu-group">
-                <button onclick="showDictionary()" style="background-color: #64748b;">單字庫</button>
+                <button onclick="showDictionary()" style="background-color: #64748b;">📖 單字庫</button>
             </div>
         </div>
-        <div id="practice-screen" style="display: none;"> 
+
+        <!-- 2. 測驗練習畫面 -->
+        <div id="practice-screen" style="display: none;">
             <h2 id="practice-title">單字測驗</h2>
-            <div id="quiz-question" style="font-size: 1.5rem; font-weight: bold; margin: 20px 0; color: #1e293b;">顯示題目</div>  
-            <input type="text" id="user-input" placeholder="請輸入答案..." style="width: 100%; padding: 10px; font-size: 1rem; border: 2px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; margin-bottom: 12px;">
+            <div id="quiz-question" style="font-size: 1.3rem; font-weight: bold; margin: 20px 0; color: #1e293b;">顯示題目</div>
+            
+            <!-- 中翻英 / 英翻中 文字輸入框 -->
+            <input type="text" id="user-input" placeholder="請輸入答案..." onkeypress="handleKeyPress(event)" style="width: 100%; padding: 10px; font-size: 1rem; border: 2px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; margin-bottom: 12px;">
+
+            <!-- 詞性多選按鈕群區 (預設隱藏) -->
+            <div id="pos-btn-group" style="display: none; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 15px;">
+                <button class="pos-select-btn" onclick="togglePosSelection(this)" data-pos="n.">n. 名詞</button>
+                <button class="pos-select-btn" onclick="togglePosSelection(this)" data-pos="v.">v. 動詞</button>
+                <button class="pos-select-btn" onclick="togglePosSelection(this)" data-pos="adj.">adj. 形容詞</button>
+                <button class="pos-select-btn" onclick="togglePosSelection(this)" data-pos="adv.">adv. 副詞</button>
+                <button class="pos-select-btn" onclick="togglePosSelection(this)" data-pos="prep.">prep. 介系詞</button>
+                <button class="pos-select-btn" onclick="togglePosSelection(this)" data-pos="conj.">conj. 連接詞</button>
+            </div>
+
             <button id="btn-submit" onclick="checkAnswer()" style="width: 100%; margin-bottom: 10px;">提交答案</button>
             <div id="feedback" style="font-weight: bold; margin-bottom: 15px; min-height: 24px;"></div>
+            
             <button onclick="showMainMenu()" style="background-color: #94a3b8; width: 100%;">返回主選單</button>
         </div>
+
+        <!-- 3. 單字庫畫面 (A-Z) -->
         <div id="dict-screen" style="display: none;">
             <h2>單字庫</h2>
-            <div id="alphabet-nav" style="display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; margin-bottom: 15px;"></div>   
-            <div id="word-list" style="text-align: left; max-height: 250px; overflow-y: auto; padding-right: 5px; margin-bottom: 15px;"></div>  
+            
+            <div id="alphabet-nav" style="display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; margin-bottom: 15px;"></div>
+
+            <div id="word-list" style="text-align: left; max-height: 280px; overflow-y: auto; padding-right: 5px; margin-bottom: 15px;"></div>
+
             <button onclick="showMainMenu()" style="background-color: #94a3b8; width: 100%;">返回主選單</button>
         </div>
     </div>
@@ -311,271 +379,316 @@
 
     ];
 
-    // DOM 元素參考
-    const mainMenu = document.getElementById('main-menu');
-    const practiceScreen = document.getElementById('practice-screen');
-    const dictScreen = document.getElementById('dict-screen');
+    // 取得頁面 DOM 元素
+        const mainMenu = document.getElementById('main-menu');
+        const practiceScreen = document.getElementById('practice-screen');
+        const dictScreen = document.getElementById('dict-screen');
 
-    // 測驗相關變數
-    let currentMode = 'c2e'; 
-    let currentQuizData = null;
-    let remainingQuestions = []; 
-    let questionCount = 0;       
-    const TOTAL_QUESTIONS = 20;  
-    let quizHistory = []; // 歷史紀錄：儲存每題的出題順序與作答結果
+        // 測驗控制變數
+        let currentMode = 'c2e'; 
+        let currentQuizData = null;
+        let remainingQuestions = []; 
+        let questionCount = 0;       
+        const TOTAL_QUESTIONS = 20;  
+        let quizHistory = [];
 
-    /* ================= 畫面切換控制 ================= */
-    function showMainMenu() {
-        mainMenu.style.display = 'block';
-        practiceScreen.style.display = 'none';
-        dictScreen.style.display = 'none';
-    }
+        /* ================= 畫面切換邏輯 ================= */
+        function showMainMenu() {
+            mainMenu.style.display = 'block';
+            practiceScreen.style.display = 'none';
+            dictScreen.style.display = 'none';
+        }
 
-    function showDictionary() {
-        mainMenu.style.display = 'none';
-        practiceScreen.style.display = 'none';
-        dictScreen.style.display = 'block';
-        
-        initAlphabetNav();
-        renderDictionary('A');
-    }
-
-    /* ================= 單字庫 (A-Z) 邏輯 ================= */
-    function initAlphabetNav() {
-        const nav = document.getElementById('alphabet-nav');
-        nav.innerHTML = '';
-
-        for (let i = 65; i <= 90; i++) {
-            const letter = String.fromCharCode(i);
-            const btn = document.createElement('button');
-            btn.className = `letter-btn ${letter === 'A' ? 'active' : ''}`;
-            btn.innerText = letter;
+        function showDictionary() {
+            mainMenu.style.display = 'none';
+            practiceScreen.style.display = 'none';
+            dictScreen.style.display = 'block';
             
-            btn.onclick = function() {
-                document.querySelectorAll('.letter-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                renderDictionary(letter);
-            };
-            
-            nav.appendChild(btn);
-        }
-    }
-
-    function renderDictionary(letter) {
-        const container = document.getElementById('word-list');
-        container.innerHTML = '';
-
-        const filteredWords = dictionary.filter(item => 
-            item.word.toUpperCase().startsWith(letter)
-        );
-
-        if (filteredWords.length === 0) {
-            container.innerHTML = `<p style="text-align:center; color:#94a3b8; font-size:0.9rem;">查無以 ${letter} 開頭的單字。</p>`;
-            return;
+            initAlphabetNav();
+            renderDictionary('A');
         }
 
-        filteredWords.forEach(item => {
-            const wordCard = document.createElement('div');
-            wordCard.className = 'word-item';
-            
-            // 把該單字下的所有詞性、中文、例句組合起來
-            let defsHtml = item.definitions.map(def => `
-                <div style="margin-top: 6px;">
-                    <span class="word-pos">[${def.pos}]</span> 
-                    <span class="word-meaning">${def.meaning}</span>
-                    <div class="word-example">💡 例句：${def.example}</div>
-                </div>
-            `).join('');
+        /* ================= 單字庫 (A-Z) 邏輯 ================= */
+        function initAlphabetNav() {
+            const nav = document.getElementById('alphabet-nav');
+            nav.innerHTML = '';
 
-            wordCard.innerHTML = `
-                <div class="word-header">
-                    <span class="word-title">${item.word}</span>
-                </div>
-                ${defsHtml}
-            `;
-            container.appendChild(wordCard);
-        });
-    }
-
-    /* ================= 測驗練習邏輯 ================= */
-    function showPractice(mode) {
-        currentMode = mode;
-        mainMenu.style.display = 'none';
-        practiceScreen.style.display = 'block';
-        dictScreen.style.display = 'none';
-
-        // 恢復輸入框與提交按鈕
-        document.getElementById('user-input').style.display = 'block';
-        document.getElementById('btn-submit').style.display = 'block';
-        
-        // 清除上一次的「再測驗一次」按鈕與歷史紀錄列表
-        const restartBtn = document.getElementById('btn-restart');
-        if (restartBtn) restartBtn.remove();
-        
-        const historyList = document.getElementById('quiz-history');
-        if (historyList) historyList.remove();
-
-        const titleElem = document.getElementById('practice-title');
-        titleElem.innerText = mode === 'c2e' ? '單字測驗 (中文 ➔ 英文)' : '單字測驗 (英文 ➔ 中文)';
-
-        resetQuiz();
-        nextQuestion();
-    }
-
-    function resetQuiz() {
-        questionCount = 0;
-        remainingQuestions = [...dictionary]; // 複製完整單字庫
-        quizHistory = []; // 清空記錄
-    }
-
-    function nextQuestion() {
-        questionCount++;
-
-        // 檢查是否超過 20 題或無題可出
-        if (questionCount > TOTAL_QUESTIONS || remainingQuestions.length === 0) {
-            showQuizSummary();
-            return;
+            for (let i = 65; i <= 90; i++) {
+                const letter = String.fromCharCode(i);
+                const btn = document.createElement('button');
+                btn.className = `letter-btn ${letter === 'A' ? 'active' : ''}`;
+                btn.innerText = letter;
+                
+                btn.onclick = function() {
+                    document.querySelectorAll('.letter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderDictionary(letter);
+                };
+                
+                nav.appendChild(btn);
+            }
         }
 
-        // 隨機抽題，並從題目池中剔除 (不重複)
-        const randomIndex = Math.floor(Math.random() * remainingQuestions.length);
-        const item = remainingQuestions[randomIndex];
-        remainingQuestions.splice(randomIndex, 1);
+        function renderDictionary(letter) {
+            const container = document.getElementById('word-list');
+            container.innerHTML = '';
 
-        // 隨機選該單字的其中一種意思來考
-        const randomDef = item.definitions[Math.floor(Math.random() * item.definitions.length)];
+            const filteredWords = dictionary.filter(item => 
+                item.word.toUpperCase().startsWith(letter)
+            );
 
-        currentQuizData = {
-            word: item.word,
-            pos: randomDef.pos,
-            meaning: randomDef.meaning,
-            allMeanings: item.definitions.map(d => d.meaning)
-        };
+            if (filteredWords.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:#94a3b8; font-size:0.9rem;">查無以 ${letter} 開頭的單字。</p>`;
+                return;
+            }
 
-        document.getElementById('user-input').value = '';
-        document.getElementById('feedback').innerText = '';
-        document.getElementById('user-input').disabled = false;
+            filteredWords.forEach(item => {
+                const wordCard = document.createElement('div');
+                wordCard.className = 'word-item';
+                
+                let defsHtml = item.definitions.map(def => `
+                    <div style="margin-top: 6px;">
+                        <span class="word-pos">[${def.pos}]</span> 
+                        <span class="word-meaning">${def.meaning}</span>
+                        <div class="word-example">💡 例句：${def.example}</div>
+                    </div>
+                `).join('');
 
-        const questionElem = document.getElementById('quiz-question');
-        const progressText = `[${questionCount}/${Math.min(TOTAL_QUESTIONS, dictionary.length)}] `;
-
-        if (currentMode === 'c2e') {
-            questionElem.innerText = `${progressText}${currentQuizData.meaning} [${currentQuizData.pos}]`;
-        } else {
-            questionElem.innerText = `${progressText}${currentQuizData.word}`;
+                wordCard.innerHTML = `
+                    <div class="word-header">
+                        <span class="word-title">${item.word}</span>
+                    </div>
+                    ${defsHtml}
+                `;
+                container.appendChild(wordCard);
+            });
         }
 
-        document.getElementById('user-input').focus();
-    }
-
-    function checkAnswer() {
-        const inputElem = document.getElementById('user-input');
-        const input = inputElem.value.trim();
-        const inputLower = input.toLowerCase();
-        const feedbackElem = document.getElementById('feedback');
-
-        if (!input) return;
-
-        let isCorrect = false;
-        let questionText = "";
-        let correctAnswerText = "";
-
-        if (currentMode === 'c2e') {
-            questionText = `${currentQuizData.meaning} [${currentQuizData.pos}]`;
-            correctAnswerText = currentQuizData.word;
-            isCorrect = (inputLower === currentQuizData.word.toLowerCase());
-        } else {
-            questionText = currentQuizData.word;
-            correctAnswerText = currentQuizData.allMeanings.join(' / ');
-            isCorrect = currentQuizData.allMeanings.some(m => m.includes(inputLower) || inputLower.includes(m));
+        /* ================= 詞性按鈕互動控制 ================= */
+        function togglePosSelection(btn) {
+            btn.classList.toggle('selected');
         }
 
-        // 紀錄這一題的詳細作答結果
-        quizHistory.push({
-            num: questionCount,
-            question: questionText,
-            userAnswer: input,
-            correctAnswer: correctAnswerText,
-            isCorrect: isCorrect
-        });
-
-        // 鎖定輸入框
-        inputElem.disabled = true;
-
-        if (isCorrect) {
-            feedbackElem.innerText = "🎉 正確！太棒了！";
-            feedbackElem.style.color = "#2ecc71";
-        } else {
-            feedbackElem.innerText = "❌ 答錯囉！";
-            feedbackElem.style.color = "#e74c3c";
+        function resetPosButtons() {
+            const btns = document.querySelectorAll('.pos-select-btn');
+            btns.forEach(b => {
+                b.classList.remove('selected');
+                b.disabled = false;
+            });
         }
 
-        // 1 秒後自動跳下一題
-        setTimeout(nextQuestion, 1000);
-    }
+        /* ================= 測驗練習控制邏輯 ================= */
+        function showPractice(mode) {
+            currentMode = mode;
+            mainMenu.style.display = 'none';
+            practiceScreen.style.display = 'block';
+            dictScreen.style.display = 'none';
 
-    function showQuizSummary() {
-        const questionElem = document.getElementById('quiz-question');
-        const feedbackElem = document.getElementById('feedback');
-        const inputElem = document.getElementById('user-input');
-        const submitBtn = document.getElementById('btn-submit');
+            const inputElem = document.getElementById('user-input');
+            const posGroup = document.getElementById('pos-btn-group');
+            const submitBtn = document.getElementById('btn-submit');
 
-        questionElem.innerText = "🎊 測驗完成！";
-        feedbackElem.innerText = `以下是你的答題檢討：`;
-        feedbackElem.style.color = "#3b82f6";
-        
-        inputElem.style.display = 'none';
-        submitBtn.style.display = 'none';
+            // 移除上一次的紀錄清單與按鈕
+            const restartBtn = document.getElementById('btn-restart');
+            if (restartBtn) restartBtn.remove();
+            const historyList = document.getElementById('quiz-history');
+            if (historyList) historyList.remove();
 
-        // 1. 動態建立題目結果檢討列表
-        const historyContainer = document.createElement('div');
-        historyContainer.id = 'quiz-history';
-        historyContainer.style.cssText = 'text-align: left; max-height: 250px; overflow-y: auto; margin: 15px 0; padding-right: 5px;';
+            submitBtn.style.display = 'block';
 
-        quizHistory.forEach(item => {
-            const itemCard = document.createElement('div');
-            itemCard.style.cssText = `
-                padding: 10px;
-                margin-bottom: 8px;
-                border-radius: 8px;
-                font-size: 0.9rem;
-                background-color: ${item.isCorrect ? '#d1fae5' : '#fee2e2'};
-                border: 1px solid ${item.isCorrect ? '#a7f3d0' : '#fca5a5'};
-                color: ${item.isCorrect ? '#065f46' : '#991b1b'};
-            `;
+            // 依據模式切換「輸入框」或「詞性多選按鈕群」
+            if (mode === 'pos') {
+                inputElem.style.display = 'none';
+                posGroup.style.display = 'flex';
+            } else {
+                inputElem.style.display = 'block';
+                posGroup.style.display = 'none';
+            }
 
-            itemCard.innerHTML = `
-                <div><strong>第 ${item.num} 題：</strong>${item.question}</div>
-                <div>你的回答：${item.userAnswer} ${item.isCorrect ? '✅' : '❌'}</div>
-                ${!item.isCorrect ? `<div>正確答案：${item.correctAnswer}</div>` : ''}
-            `;
-            historyContainer.appendChild(itemCard);
-        });
+            // 設定標題
+            const titleElem = document.getElementById('practice-title');
+            if (mode === 'c2e') titleElem.innerText = '單字測驗 (中翻英)';
+            else if (mode === 'e2c') titleElem.innerText = '單字測驗 (英翻中)';
+            else titleElem.innerText = '🏷️ 詞性多選';
 
-        // 將檢討清單插入在提示訊息下方
-        feedbackElem.parentNode.insertBefore(historyContainer, feedbackElem.nextSibling);
+            resetQuiz();
+            nextQuestion();
+        }
 
-        // 2. 新增「再測驗一次」按鈕
-        if (!document.getElementById('btn-restart')) {
-            const restartBtn = document.createElement('button');
-            restartBtn.id = 'btn-restart';
-            restartBtn.innerText = '🔄 再測驗一次';
-            restartBtn.style.width = '100%';
-            restartBtn.style.marginBottom = '10px';
-            restartBtn.style.backgroundColor = '#2ecc71';
-            restartBtn.onclick = function() {
-                showPractice(currentMode);
+        function resetQuiz() {
+            questionCount = 0;
+            remainingQuestions = [...dictionary];
+            quizHistory = [];
+        }
+
+        function nextQuestion() {
+            questionCount++;
+
+            if (questionCount > TOTAL_QUESTIONS || remainingQuestions.length === 0) {
+                showQuizSummary();
+                return;
+            }
+
+            const randomIndex = Math.floor(Math.random() * remainingQuestions.length);
+            const item = remainingQuestions[randomIndex];
+            remainingQuestions.splice(randomIndex, 1);
+
+            const allPosList = [...new Set(item.definitions.map(d => d.pos.toLowerCase()))];
+            const randomDef = item.definitions[Math.floor(Math.random() * item.definitions.length)];
+
+            currentQuizData = {
+                word: item.word,
+                pos: randomDef.pos,
+                meaning: randomDef.meaning,
+                allMeanings: item.definitions.map(d => d.meaning),
+                allPos: allPosList
             };
 
-            historyContainer.parentNode.insertBefore(restartBtn, historyContainer.nextSibling);
-        }
-    }
+            document.getElementById('user-input').value = '';
+            document.getElementById('feedback').innerText = '';
+            document.getElementById('user-input').disabled = false;
+            resetPosButtons();
 
-    function handleKeyPress(e) {
-        if (e.key === 'Enter') {
-            checkAnswer();
+            const questionElem = document.getElementById('quiz-question');
+            const progressText = `[${questionCount}/${Math.min(TOTAL_QUESTIONS, dictionary.length)}] `;
+
+            if (currentMode === 'c2e') {
+                questionElem.innerText = `${progressText}${currentQuizData.meaning} [${currentQuizData.pos}]`;
+            } else if (currentMode === 'e2c') {
+                questionElem.innerText = `${progressText}${currentQuizData.word}`;
+            } else { 
+                questionElem.innerText = `${progressText}${currentQuizData.word} (請勾選詞性)`;
+            }
+
+            if (currentMode !== 'pos') {
+                document.getElementById('user-input').focus();
+            }
         }
-    }
-</script>
+
+        function checkAnswer() {
+            const feedbackElem = document.getElementById('feedback');
+            let isCorrect = false;
+            let questionText = "";
+            let correctAnswerText = "";
+            let userAnswerText = "";
+
+            if (currentMode === 'pos') {
+                const selectedBtns = document.querySelectorAll('.pos-select-btn.selected');
+                const userPosList = Array.from(selectedBtns).map(b => b.getAttribute('data-pos').toLowerCase());
+
+                questionText = currentQuizData.word;
+                correctAnswerText = currentQuizData.allPos.join(', ');
+                userAnswerText = userPosList.length > 0 ? userPosList.join(', ') : "(未選擇)";
+
+                const isSameLength = userPosList.length === currentQuizData.allPos.length;
+                const isAllMatched = currentQuizData.allPos.every(p => userPosList.includes(p));
+
+                isCorrect = isSameLength && isAllMatched;
+                document.querySelectorAll('.pos-select-btn').forEach(b => b.disabled = true);
+
+            } else {
+                const inputElem = document.getElementById('user-input');
+                const input = inputElem.value.trim();
+                const inputLower = input.toLowerCase();
+
+                if (!input) return;
+
+                if (currentMode === 'c2e') {
+                    questionText = `${currentQuizData.meaning} [${currentQuizData.pos}]`;
+                    correctAnswerText = currentQuizData.word;
+                    isCorrect = (inputLower === currentQuizData.word.toLowerCase());
+                } else {
+                    questionText = currentQuizData.word;
+                    correctAnswerText = currentQuizData.allMeanings.join(' / ');
+                    isCorrect = currentQuizData.allMeanings.some(m => m.includes(inputLower) || inputLower.includes(m));
+                }
+
+                userAnswerText = input;
+                inputElem.disabled = true;
+            }
+
+            quizHistory.push({
+                num: questionCount,
+                question: questionText,
+                userAnswer: userAnswerText,
+                correctAnswer: correctAnswerText,
+                isCorrect: isCorrect
+            });
+
+            if (isCorrect) {
+                feedbackElem.innerText = "🎉 正確！太棒了！";
+                feedbackElem.style.color = "#2ecc71";
+            } else {
+                feedbackElem.innerText = "❌ 答錯囉！";
+                feedbackElem.style.color = "#e74c3c";
+            }
+
+            // 1 秒後自動跳下一題 (不公布答案)
+            setTimeout(nextQuestion, 1000);
+        }
+
+        function showQuizSummary() {
+            const questionElem = document.getElementById('quiz-question');
+            const feedbackElem = document.getElementById('feedback');
+            const inputElem = document.getElementById('user-input');
+            const posGroup = document.getElementById('pos-btn-group');
+            const submitBtn = document.getElementById('btn-submit');
+
+            questionElem.innerText = "🎊 測驗完成！";
+            feedbackElem.innerText = `以下是你的答題檢討：`;
+            feedbackElem.style.color = "#3b82f6";
+            
+            inputElem.style.display = 'none';
+            posGroup.style.display = 'none';
+            submitBtn.style.display = 'none';
+
+            // 建立歷史答題檢討卡片
+            const historyContainer = document.createElement('div');
+            historyContainer.id = 'quiz-history';
+            historyContainer.style.cssText = 'text-align: left; max-height: 250px; overflow-y: auto; margin: 15px 0; padding-right: 5px;';
+
+            quizHistory.forEach(item => {
+                const itemCard = document.createElement('div');
+                itemCard.style.cssText = `
+                    padding: 10px;
+                    margin-bottom: 8px;
+                    border-radius: 8px;
+                    font-size: 0.9rem;
+                    background-color: ${item.isCorrect ? '#d1fae5' : '#fee2e2'};
+                    border: 1px solid ${item.isCorrect ? '#a7f3d0' : '#fca5a5'};
+                    color: ${item.isCorrect ? '#065f46' : '#991b1b'};
+                `;
+
+                itemCard.innerHTML = `
+                    <div><strong>第 ${item.num} 題：</strong>${item.question}</div>
+                    <div>你的回答：${item.userAnswer} ${item.isCorrect ? '✅' : '❌'}</div>
+                    ${!item.isCorrect ? `<div>正確答案：${item.correctAnswer}</div>` : ''}
+                `;
+                historyContainer.appendChild(itemCard);
+            });
+
+            feedbackElem.parentNode.insertBefore(historyContainer, feedbackElem.nextSibling);
+
+            if (!document.getElementById('btn-restart')) {
+                const restartBtn = document.createElement('button');
+                restartBtn.id = 'btn-restart';
+                restartBtn.innerText = '🔄 再測驗一次';
+                restartBtn.style.width = '100%';
+                restartBtn.style.marginBottom = '10px';
+                restartBtn.style.backgroundColor = '#2ecc71';
+                restartBtn.onclick = function() {
+                    showPractice(currentMode);
+                };
+
+                historyContainer.parentNode.insertBefore(restartBtn, historyContainer.nextSibling);
+            }
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        }
+    </script>
 </body>
-</html> 
+</html>
